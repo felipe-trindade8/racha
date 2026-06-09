@@ -1,29 +1,62 @@
 # Load Project Context
 
-Use this skill before planning or implementing any feature.
+Use this skill at the beginning of a new Claude Code session.
 
-## Steps
+## Objective
 
-1. Read:
-    - docs/product.md
-    - docs/architecture.md
-    - docs/coding-standards.md
+Build a complete understanding of the project and retain that context for the remainder of the session.
 
-2. Understand:
-    - Business domain
-    - User roles
-    - Main entities
-    - Architecture decisions
-    - Coding standards
+## Read
 
-3. Use this context for all subsequent tasks in the current session.
+- docs/product.md
+- docs/architecture.md
+- docs/coding-standards.md
+
+## Understand
+
+### Business
+
+- Product goals
+- User roles
+- Main user workflows
+- Business rules
+
+### Domain
+
+- Core entities
+- Relationships between entities
+- Domain terminology
+
+### Architecture
+
+- Frontend architecture
+- Backend architecture
+- API conventions
+- Authentication and authorization model
+- Infrastructure constraints
+
+### Development Standards
+
+- Coding standards
+- Testing standards
+- Project conventions
+
+## Output
+
+Provide a concise summary including:
+
+- Product purpose
+- User roles
+- Main entities
+- Architecture overview
+- Important constraints
 
 ## Important
 
-Do not propose solutions that violate:
+This skill must:
 
-- product requirements
-- architecture decisions
-- coding standards
+- Not create plans
+- Not implement code
+- Not modify files
 
-If there is a conflict between requirements and architecture, highlight it before proceeding.
+The purpose is only to load project knowledge into the current session.

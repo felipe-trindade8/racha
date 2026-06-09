@@ -1,35 +1,118 @@
 # Plan Feature
 
-Use this skill before implementing any feature.
+Use this skill when planning a new feature, epic, or large piece of work.
 
-## Prerequisites
+## Assumption
 
-Execute load-project-context first.
+Project context has already been loaded.
 
-## Steps
+## Objective
 
-1. Analyze the requested feature.
+Create a complete technical plan before implementation begins.
 
-2. Identify:
-    - Business requirements
-    - Affected entities
-    - Database changes
-    - Backend changes
-    - Frontend changes
-    - Authorization requirements
-    - Validation requirements
-    - Testing requirements
+## Analysis
 
-3. Create a technical implementation plan.
+Understand:
 
-4. Break the work into small GitHub issues.
+- Business objective
+- User value
+- Functional requirements
+- Non-functional requirements
 
-5. Identify dependencies and risks.
+## Identify
+
+### Domain Impact
+
+- New entities
+- Modified entities
+- Relationships affected
+
+### Database Impact
+
+- New tables
+- New columns
+- Indexes
+- Migrations
+
+### Backend Impact
+
+- Services
+- Controllers
+- Requests
+- Policies
+- Events
+- Jobs
+
+### API Impact
+
+- New endpoints
+- Modified endpoints
+- Request contracts
+- Response contracts
+
+### Frontend Impact
+
+- Pages
+- Components
+- Composables
+- Services
+- Types
+
+### Security
+
+- Authentication requirements
+- Authorization requirements
+
+### Validation
+
+- Business validations
+- Data validations
+
+### Testing
+
+- Backend tests
+- Frontend tests
+- E2E tests
+
+## Risks
+
+Identify:
+
+- Technical risks
+- Architectural concerns
+- Dependencies
+- Open questions
+
+## Deliverables
+
+Produce:
+
+### Feature Summary
+
+Brief description of the feature.
+
+### Technical Plan
+
+Step-by-step implementation plan.
+
+### GitHub Issues
+
+Break work into small issues.
+
+Each issue should:
+
+- Have a clear objective
+- Be independently deliverable
+- Take approximately 1–4 hours
+
+### Dependencies
+
+List issue dependencies.
 
 ## Important
 
 Do not write code.
 
-Focus only on planning.
+Do not modify files.
 
-Issues should be small enough to be completed in 1 to 4 hours.
+Focus exclusively on planning.
