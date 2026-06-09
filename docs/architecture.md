@@ -2,7 +2,12 @@
 
 ## Architecture Style
 
-- SPA frontend consuming a REST API
+- Universal (SSR) Nuxt frontend consuming a REST API
+  - Nuxt runs in its default universal mode: server-side rendering on first
+    request, then client-side hydration and navigation.
+  - The frontend calls the backend over two base URLs: the browser uses the
+    public host (`localhost:8000`), while SSR uses the internal service
+    hostname (`http://backend:8000`).
 - Frontend and backend deployed independently
 - Backend is stateless
 
