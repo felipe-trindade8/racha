@@ -79,6 +79,14 @@ Requirements:
 - Follow existing project patterns
 - Keep changes focused on the issue scope
 
+During implementation:
+
+- Use Laravel-related skills for backend changes
+- Use Nuxt-related skills for frontend changes
+- Use Pest-related skills for backend tests
+- Use Vitest-related skills for frontend tests
+- Use Playwright-related skills for E2E tests
+
 ## Phase 4 - Testing
 
 Create or update automated tests.

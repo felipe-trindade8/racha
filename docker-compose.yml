@@ -60,10 +60,33 @@ services:
     depends_on:
       - backend
 
+  # End-to-end tests (B-06). The frontend image is alpine/musl, where Playwright
+  # browsers do not run, so E2E uses the official Playwright image (browsers
+  # preinstalled) and hits the frontend over the Compose network.
+  # Behind the `e2e` profile so it never starts with a plain `docker compose up`.
+  # Run with: docker compose run --rm e2e
+  e2e:
+    image: mcr.microsoft.com/playwright:v1.60.0-jammy
+    working_dir: /app
+    environment:
+      PLAYWRIGHT_BASE_URL: http://frontend:3000
+      CI: "true"
+    volumes:
+      - ./frontend:/app
+      # Dedicated volume keeps these glibc-built deps separate from the
+      # frontend's alpine/musl node_modules.
+      - e2e-node-modules:/app/node_modules
+    command: sh -c "npm install && npx playwright test"
+    depends_on:
+      - frontend
+    profiles:
+      - e2e
+
 volumes:
   db-data:
   backend-vendor:
   frontend-node-modules:
+  e2e-node-modules:
 
 networks:
   default:

@@ -158,3 +158,6 @@ Goals:
 ### End-to-end
 
 - Playwright
+- Runs in a dedicated `e2e` Compose service (official Playwright image; the
+  alpine frontend container cannot run the browsers) against the running
+  frontend over the Compose network. Run with `docker compose run --rm e2e`.
