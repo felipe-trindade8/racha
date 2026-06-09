@@ -20,6 +20,15 @@ export default defineNuxtConfig({
     port: 3000,
   },
 
+  // Allow the Compose-network hostname so the `e2e` service (and any other
+  // in-network client) can reach the dev server. Vite blocks unknown hosts by
+  // default; `frontend` is the service name on the Compose network.
+  vite: {
+    server: {
+      allowedHosts: ['frontend'],
+    },
+  },
+
   runtimeConfig: {
     // Private — only available server-side (SSR). Nuxt reaches the backend
     // over the internal Docker network hostname.
