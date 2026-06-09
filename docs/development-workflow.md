@@ -1,14 +1,18 @@
 # Development Workflow
 
-For every issue:
+## Session Start
 
-1. Read product.md
-2. Read architecture.md
-3. Read coding-standards.md
-4. Analyze the issue
-5. Create an implementation plan
-6. Wait for approval
-7. Implement the solution
-8. Create automated tests
-9. Run all tests
-10. Update documentation if necessary
+1. Execute load-project-context
+
+## Feature Planning
+
+1. Execute plan-feature
+2. Review plan
+3. Create GitHub issues
+
+## Issue Execution
+
+1. Execute work-on-issue
+2. Review implementation plan
+3. Approve
+4. Review implementation results
