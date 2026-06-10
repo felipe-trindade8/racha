@@ -48,6 +48,8 @@ Examples:
 - Avoid direct database queries in Controllers.
 - Prefer Eloquent relationships over manual joins when reasonable.
 - Avoid whereHas, use join instead.
+- Cross-cutting, stateless utility classes live in `app/Helpers` (`App\Helpers`),
+  e.g. `ApiResponse` for the standard JSON envelopes.
 
 ## Frontend Standards
 
