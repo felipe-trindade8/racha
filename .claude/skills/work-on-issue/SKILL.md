@@ -68,7 +68,14 @@ Present:
 
 Then stop and wait for approval.
 
-## Phase 3 - Implementation
+## Phase 3 - Git Rules
+
+For every issue:
+
+- Follow coding-standards.md
+- Create a new branch before implementation
+
+## Phase 4 - Implementation
 
 Only execute after explicit approval.
 
@@ -87,7 +94,7 @@ During implementation:
 - Use Vitest-related skills for frontend tests
 - Use Playwright-related skills for E2E tests
 
-## Phase 4 - Testing
+## Phase 5 - Testing
 
 Create or update automated tests.
 
@@ -99,7 +106,7 @@ Report:
 - Results
 - Failures if any
 
-## Phase 5 - Documentation
+## Phase 6 - Documentation
 
 Update documentation only if the change affects:
 
@@ -107,7 +114,7 @@ Update documentation only if the change affects:
 - User workflows
 - Architecture decisions
 
-## Phase 6 - Summary
+## Phase 7 - Summary
 
 Provide:
 
@@ -126,3 +133,70 @@ What was tested.
 ### Notes
 
 Any follow-up recommendations or technical debt identified.
+
+## Phase 8 - Git Workflow
+
+After implementation is completed and all tests pass:
+
+## Commit
+
+1. Review changed files
+2. Create a commit using Conventional Commits
+
+Commit format:
+
+<type>(<scope>): <description>
+
+Examples:
+
+- feat(auth): add password reset endpoint
+- fix(users): validate email uniqueness
+- refactor(tournament): simplify ranking calculation
+
+## Pull Request
+
+1. Push branch to origin
+2. Create a Pull Request against the target branch
+
+PR title:
+
+<issue-title>
+
+PR description:
+
+### Summary
+
+Brief description of the implementation.
+
+### Changes
+
+- Change 1
+- Change 2
+- Change 3
+
+### Tests
+
+- [x] Backend tests
+- [x] Frontend tests
+- [x] E2E tests (if applicable)
+
+### Screenshots
+
+If UI changes were made.
+
+### Checklist
+
+- [x] Requirements implemented
+- [x] Tests passing
+- [x] Coding standards followed
+- [x] No unrelated changes included
+
+## Final Output
+
+Provide:
+
+- Branch name
+- Commit hash
+- Commit message
+- Pull Request URL
+- Any follow-up recommendations
