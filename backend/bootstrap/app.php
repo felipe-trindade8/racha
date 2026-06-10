@@ -1,9 +1,13 @@
 <?php
 
+use App\Helpers\ApiResponse;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -20,4 +24,12 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*'),
         );
+
+        // Normalize not-found errors (missing routes and missing models) into
+        // the standard error envelope with an explicit message.
+        $exceptions->render(function (NotFoundHttpException|ModelNotFoundException $e, Request $request): ?JsonResponse {
+            return $request->is('api/*')
+                ? ApiResponse::error('Resource not found.', status: 404)
+                : null;
+        });
     })->create();

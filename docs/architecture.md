@@ -38,6 +38,18 @@ Goals:
 - Use camelCase in frontend and backend code
 - Use pagination for list endpoints
 
+### Response Envelopes
+
+All API responses use a consistent JSON envelope, built through the
+`App\Helpers\ApiResponse` helper:
+
+- Success: `{ "data": ... }`
+- Paginated list: `{ "data": [...], "meta": { "current_page", "per_page", "total", "last_page" } }`
+- Error: `{ "message": "...", "errors": { ... } }` (the `errors` key is present only for field-level validation errors)
+
+A global exception handler renders errors in this envelope with correct status
+codes: `422` validation, `401` unauthenticated, `403` forbidden, `404` not found.
+
 ## Frontend
 
 ### Technologies
