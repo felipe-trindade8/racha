@@ -7,9 +7,6 @@
 .cache
 dist
 
-# Tests
-test-results
-
 # Dependencies
 node_modules
 
