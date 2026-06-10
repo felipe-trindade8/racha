@@ -3,7 +3,14 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-01-01',
   devtools: { enabled: true },
 
-  modules: ['@nuxt/ui'],
+  modules: ['@nuxt/ui', '@nuxt/eslint'],
+
+  // Prettier owns formatting; disable ESLint stylistic rules to avoid conflicts.
+  eslint: {
+    config: {
+      stylistic: false,
+    },
+  },
 
   css: ['~/assets/css/main.css'],
 

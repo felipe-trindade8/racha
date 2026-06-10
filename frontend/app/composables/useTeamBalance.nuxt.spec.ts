@@ -21,8 +21,7 @@ describe('useTeamBalance', () => {
     const { balance } = useTeamBalance()
     const { teamA, teamB } = balance(players)
 
-    const total = (team: BalancePlayer[]) =>
-      team.reduce((sum, p) => sum + p.rating, 0)
+    const total = (team: BalancePlayer[]) => team.reduce((sum, p) => sum + p.rating, 0)
 
     expect(total(teamA)).toBe(total(teamB))
   })
