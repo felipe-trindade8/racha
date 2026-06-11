@@ -186,4 +186,16 @@ codes: `422` validation, `401` unauthenticated, `403` forbidden, `404` not found
 - Playwright
 - Runs in a dedicated `e2e` Compose service (official Playwright image; the
   alpine frontend container cannot run the browsers) against the running
-  frontend over the Compose network. Run with `docker compose run --rm e2e`.
+  frontend over the Compose network.
+- Specs that exercise the API from the browser need the `docker-compose.e2e.yml`
+  override: the in-network browser's origin is `http://frontend:3000`, so the
+  frontend's public API base points at `http://backend:8000` and the backend
+  allows that origin for CORS (`FRONTEND_URL_INTERNAL`). Run with:
+
+  ```sh
+  docker compose -f docker-compose.yml -f docker-compose.e2e.yml up -d frontend
+  docker compose -f docker-compose.yml -f docker-compose.e2e.yml run --rm e2e
+  ```
+
+  The backend must be migrated and seeded first
+  (`docker compose exec backend php artisan migrate --seed`).
