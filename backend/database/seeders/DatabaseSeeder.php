@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Player;
+use App\Models\Position;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -21,6 +22,17 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@example.com',
         ]);
 
-        Player::factory()->count(20)->create();
+        $this->call(PositionSeeder::class);
+
+        $positions = Position::all();
+
+        Player::factory()
+            ->count(20)
+            ->create()
+            ->each(function (Player $player) use ($positions): void {
+                $player->positions()->attach(
+                    $positions->random(rand(1, 2))->pluck('id'),
+                );
+            });
     }
 }
