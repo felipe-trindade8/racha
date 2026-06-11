@@ -15,6 +15,7 @@
 - Classes: PascalCase
 - Methods: camelCase
 - Variables: camelCase
+- Enums: PascalCase with an `Enum` suffix (e.g. `RoleEnum`); the file name must match the class name
 - Database tables: snake_case plural
 - Database columns: snake_case
 - Array indexes: snake_case

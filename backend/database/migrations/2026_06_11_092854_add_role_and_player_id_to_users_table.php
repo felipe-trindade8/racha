@@ -1,6 +1,6 @@
 <?php
 
-use App\Enums\Role;
+use App\Enums\RoleEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('role')->default(Role::Player->value)->after('email');
+            $table->string('role')->default(RoleEnum::Player->value)->after('email');
             $table->unsignedBigInteger('player_id')->nullable()->after('role');
         });
     }
