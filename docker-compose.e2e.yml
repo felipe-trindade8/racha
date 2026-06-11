@@ -1,0 +1,14 @@
+# E2E overrides for the Playwright stack.
+#
+# The Playwright browser runs inside the Compose network (in the `e2e`
+# service), so its *client-side* API base must reach the backend by service
+# name. The default public base (http://localhost:8000) only works for a
+# browser on the host — inside a container "localhost" is the container itself.
+#
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.e2e.yml up -d frontend
+#   docker compose -f docker-compose.yml -f docker-compose.e2e.yml run --rm e2e
+services:
+  frontend:
+    environment:
+      NUXT_PUBLIC_API_BASE: http://backend:8000/api/v1

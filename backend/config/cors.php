@@ -18,9 +18,15 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [
+    // The browser reaches the API from the host (FRONTEND_URL) in normal dev,
+    // and from inside the Compose network (FRONTEND_URL_INTERNAL) when the
+    // Playwright `e2e` service drives the frontend. Both origins are allowed so
+    // E2E works without per-environment juggling (mirrors the frontend's
+    // public/internal API base split — see docs/architecture.md).
+    'allowed_origins' => array_values(array_filter([
         env('FRONTEND_URL', 'http://localhost:3000'),
-    ],
+        env('FRONTEND_URL_INTERNAL', 'http://frontend:3000'),
+    ])),
 
     'allowed_origins_patterns' => [],
 
