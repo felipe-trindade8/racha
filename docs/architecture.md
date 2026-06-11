@@ -148,6 +148,20 @@ codes: `422` validation, `401` unauthenticated, `403` forbidden, `404` not found
 - Confirm attendance
 - View and edit their own information
 
+### Enforcement
+
+- Route-level role gating uses the `role` middleware
+  (`App\Http\Middleware\EnsureUserHasRole`), e.g. `role:administrator` or
+  `role:administrator,player`. Unauthenticated requests return `401` and
+  disallowed roles return `403`, both in the standard error envelope.
+- Resource authorization uses Policies in `app/Policies`, auto-discovered by
+  the `{Model}Policy` naming convention. Each feature epic adds a policy whose
+  methods encode the non-administrator (player) rules.
+- Administrators bypass every gate and policy via a global `Gate::before` hook
+  registered in `AppServiceProvider`, so policy methods only need to express
+  the player rules. A standalone `administrator` ability is also available for
+  checks not tied to a specific model.
+
 ## Documentation
 
 - Swagger
