@@ -51,6 +51,11 @@ Examples:
 - Cross-cutting, stateless utility classes live in `app/Helpers` (`App\Helpers`),
   e.g. `ApiResponse` for the standard JSON envelopes.
 
+### Migrations
+
+- Never edit an existing migration. Always add a new migration for schema
+  changes, unless explicitly asked otherwise.
+
 ## Frontend Standards
 
 - Pages should focus on composition and orchestration.
