@@ -52,11 +52,13 @@ export function useApi() {
     headers: {
       Accept: 'application/json',
     },
-    onRequest() {
-      // Auth-header injection hook. The bearer token is wired in a later issue;
-      // once available it is set here, e.g.:
-      //   const token = useAuthToken()
-      //   if (token.value) options.headers.set('Authorization', `Bearer ${token.value}`)
+    onRequest({ options }) {
+      // Inject the bearer token into every API call. The token lives in a
+      // cookie so it is available during SSR as well (see useAuthToken).
+      const token = useAuthToken()
+      if (token.value) {
+        options.headers.set('Authorization', `Bearer ${token.value}`)
+      }
     },
     onResponseError({ response }) {
       throw normalizeApiError({ data: response._data, message: response.statusText })
