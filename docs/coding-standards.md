@@ -15,6 +15,7 @@
 - Classes: PascalCase
 - Methods: camelCase
 - Variables: camelCase
+- Enums: PascalCase with an `Enum` suffix (e.g. `RoleEnum`); the file name must match the class name
 - Database tables: snake_case plural
 - Database columns: snake_case
 - Array indexes: snake_case
@@ -50,6 +51,11 @@ Examples:
 - Avoid whereHas, use join instead.
 - Cross-cutting, stateless utility classes live in `app/Helpers` (`App\Helpers`),
   e.g. `ApiResponse` for the standard JSON envelopes.
+
+### Migrations
+
+- Never edit an existing migration. Always add a new migration for schema
+  changes, unless explicitly asked otherwise.
 
 ## Frontend Standards
 
