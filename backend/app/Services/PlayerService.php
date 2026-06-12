@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Player;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
@@ -15,6 +16,18 @@ use Illuminate\Support\Facades\DB;
  */
 class PlayerService
 {
+    /**
+     * Return a paginated list of players with their positions eager-loaded.
+     *
+     * @return LengthAwarePaginator<int, Player>
+     */
+    public function paginate(int $perPage = 15): LengthAwarePaginator
+    {
+        return Player::query()
+            ->with('positions')
+            ->paginate($perPage);
+    }
+
     /**
      * Create a player and sync its positions in a single call.
      *
