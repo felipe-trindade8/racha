@@ -11,7 +11,7 @@ import { BaseService } from '~/services/BaseService'
 import type { Resource } from '~/types/api'
 import type { LoginResult, User } from '~/types/auth'
 
-export class AuthService extends BaseService {
+export class AuthService extends BaseService<never> {
   constructor() {
     super('auth')
   }
