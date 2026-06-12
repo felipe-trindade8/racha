@@ -4,6 +4,10 @@ use App\Http\Controllers\Api\V1\Auth\LoginController;
 use App\Http\Controllers\Api\V1\Auth\LogoutController;
 use App\Http\Controllers\Api\V1\Auth\MeController;
 use App\Http\Controllers\Api\V1\HealthController;
+use App\Http\Controllers\Api\V1\Players\IndexPlayerController;
+use App\Http\Controllers\Api\V1\Players\ShowPlayerController;
+use App\Http\Controllers\Api\V1\Players\StorePlayerController;
+use App\Http\Controllers\Api\V1\Players\UpdatePlayerController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function (): void {
@@ -14,5 +18,10 @@ Route::prefix('v1')->group(function (): void {
     Route::middleware('auth:sanctum')->group(function (): void {
         Route::post('auth/logout', LogoutController::class);
         Route::get('auth/me', MeController::class);
+
+        Route::get('players', IndexPlayerController::class);
+        Route::post('players', StorePlayerController::class);
+        Route::get('players/{player}', ShowPlayerController::class);
+        Route::put('players/{player}', UpdatePlayerController::class);
     });
 });

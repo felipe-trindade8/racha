@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Player;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
@@ -15,6 +16,28 @@ use Illuminate\Support\Facades\DB;
  */
 class PlayerService
 {
+    /**
+     * The player columns selected by default when listing.
+     *
+     * `id` must be present so the positions relationship can be eager-loaded.
+     *
+     * @var list<string>
+     */
+    private const DEFAULT_COLUMNS = ['id', 'name', 'nickname', 'rating', 'status', 'phone', 'created_at', 'updated_at'];
+
+    /**
+     * Return a paginated list of players with their positions eager-loaded.
+     *
+     * @param  list<string>  $columns
+     * @return LengthAwarePaginator<int, Player>
+     */
+    public function paginate(int $perPage = 15, array $columns = self::DEFAULT_COLUMNS): LengthAwarePaginator
+    {
+        return Player::query()
+            ->with('positions')
+            ->paginate($perPage, $columns);
+    }
+
     /**
      * Create a player and sync its positions in a single call.
      *

@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Player;
 
 use App\Enums\PlayerStatusEnum;
+use App\Models\Player;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -13,7 +14,7 @@ class StorePlayerRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return $this->user()?->can('create', Player::class) ?? false;
     }
 
     /**
