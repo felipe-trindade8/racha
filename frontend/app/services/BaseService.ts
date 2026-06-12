@@ -7,7 +7,7 @@
  * composables (see docs/coding-standards.md).
  *
  * Example:
- *   class PlayerService extends BaseService {
+ *   class PlayerService extends BaseService<Player> {
  *     constructor() {
  *       super('players')
  *     }
@@ -19,7 +19,7 @@ import type { Paginated, Resource } from '~/types/api'
 export type QueryParams = Record<string, string | number | boolean | undefined>
 export type Payload = Record<string, unknown>
 
-export abstract class BaseService {
+export abstract class BaseService<TResource> {
   protected readonly client: ApiClient
 
   /**
@@ -34,23 +34,26 @@ export abstract class BaseService {
   }
 
   /** Fetch a paginated list of resources. */
-  protected list<T>(query?: QueryParams) {
-    return this.client<Paginated<T>>(this.resource, { query })
+  protected list(query?: QueryParams) {
+    return this.client<Paginated<TResource>>(this.resource, { query })
   }
 
   /** Fetch a single resource by id. */
-  protected get<T>(id: number | string) {
-    return this.client<Resource<T>>(`${this.resource}/${id}`)
+  protected get(id: number | string) {
+    return this.client<Resource<TResource>>(`${this.resource}/${id}`)
   }
 
   /** Create a resource. */
-  protected create<T>(payload: Payload) {
-    return this.client<Resource<T>>(this.resource, { method: 'POST', body: payload })
+  protected create(payload: Payload) {
+    return this.client<Resource<TResource>>(this.resource, { method: 'POST', body: payload })
   }
 
   /** Replace/update a resource by id. */
-  protected update<T>(id: number | string, payload: Payload) {
-    return this.client<Resource<T>>(`${this.resource}/${id}`, { method: 'PUT', body: payload })
+  protected update(id: number | string, payload: Payload) {
+    return this.client<Resource<TResource>>(`${this.resource}/${id}`, {
+      method: 'PUT',
+      body: payload,
+    })
   }
 
   /** Delete a resource by id. */
