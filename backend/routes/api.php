@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\V1\Players\IndexPlayerController;
 use App\Http\Controllers\Api\V1\Players\ShowPlayerController;
 use App\Http\Controllers\Api\V1\Players\StorePlayerController;
 use App\Http\Controllers\Api\V1\Players\UpdatePlayerController;
+use App\Http\Controllers\Api\V1\Players\UpdatePlayerStatusController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function (): void {
@@ -23,5 +24,6 @@ Route::prefix('v1')->group(function (): void {
         Route::post('players', StorePlayerController::class);
         Route::get('players/{player}', ShowPlayerController::class);
         Route::put('players/{player}', UpdatePlayerController::class);
+        Route::patch('players/{player}/status', UpdatePlayerStatusController::class);
     });
 });

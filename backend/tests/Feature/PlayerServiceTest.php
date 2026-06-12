@@ -80,3 +80,33 @@ it('clears positions when an empty position_ids array is provided', function ():
 
     expect($player->refresh()->positions)->toHaveCount(0);
 });
+
+it('transitions a player to a new status', function (): void {
+    $player = Player::factory()->create(['status' => PlayerStatusEnum::Active]);
+
+    $updated = $this->service->updateStatus($player, PlayerStatusEnum::Inactive);
+
+    expect($updated->status)->toBe(PlayerStatusEnum::Inactive)
+        ->and($player->fresh()->status)->toBe(PlayerStatusEnum::Inactive);
+});
+
+it('excludes inactive players from the default pagination', function (): void {
+    Player::factory()->count(2)->create();
+    Player::factory()->injured()->create();
+    Player::factory()->inactive()->create();
+
+    $players = $this->service->paginate();
+
+    expect($players->total())->toBe(3)
+        ->and($players->pluck('status'))->not->toContain(PlayerStatusEnum::Inactive);
+});
+
+it('filters the pagination by status', function (): void {
+    Player::factory()->count(2)->create();
+    Player::factory()->inactive()->create();
+
+    $players = $this->service->paginate(status: PlayerStatusEnum::Inactive);
+
+    expect($players->total())->toBe(1)
+        ->and($players->first()->status)->toBe(PlayerStatusEnum::Inactive);
+});

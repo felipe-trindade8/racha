@@ -9,7 +9,7 @@ it('lets administrators perform every player action', function (string $ability)
     $player = Player::factory()->create();
 
     expect(Gate::forUser($admin)->allows($ability, $player))->toBeTrue();
-})->with(['viewAny', 'view', 'create', 'update', 'delete']);
+})->with(['viewAny', 'view', 'create', 'update', 'delete', 'updateStatus']);
 
 it('lets a player view their own linked record', function (): void {
     $player = Player::factory()->create();
@@ -56,4 +56,11 @@ it('forbids a player from listing, creating or deleting players', function (): v
     expect(Gate::forUser($user)->allows('viewAny', Player::class))->toBeFalse()
         ->and(Gate::forUser($user)->allows('create', Player::class))->toBeFalse()
         ->and(Gate::forUser($user)->allows('delete', $player))->toBeFalse();
+});
+
+it('forbids a player from changing the status of their own linked record', function (): void {
+    $player = Player::factory()->create();
+    $user = User::factory()->create(['player_id' => $player->id]);
+
+    expect(Gate::forUser($user)->allows('updateStatus', $player))->toBeFalse();
 });
