@@ -54,4 +54,15 @@ class PlayerPolicy
     {
         return false;
     }
+
+    /**
+     * Determine whether the user can change the player's status.
+     *
+     * Status changes are administrator-only, so players may never do this even
+     * for their own linked record.
+     */
+    public function updateStatus(User $user, Player $player): bool
+    {
+        return false;
+    }
 }

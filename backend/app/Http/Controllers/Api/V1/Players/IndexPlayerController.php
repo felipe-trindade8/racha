@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1\Players;
 
+use App\Enums\PlayerStatusEnum;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PlayerResource;
@@ -19,7 +20,9 @@ class IndexPlayerController extends Controller
     {
         Gate::authorize('viewAny', Player::class);
 
-        $players = $this->playerService->paginate($request->integer('per_page', 15));
+        $status = PlayerStatusEnum::tryFrom((string) $request->query('status'));
+
+        $players = $this->playerService->paginate($request->integer('per_page', 15), $status);
 
         $players->through(fn (Player $player): PlayerResource => new PlayerResource($player));
 

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\PlayerStatusEnum;
 use App\Models\Player;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
@@ -28,13 +29,22 @@ class PlayerService
     /**
      * Return a paginated list of players with their positions eager-loaded.
      *
+     * When a status is given the list is filtered to exactly that status;
+     * otherwise inactive players are excluded so the default listing only shows
+     * the current roster (active and injured members).
+     *
      * @param  list<string>  $columns
      * @return LengthAwarePaginator<int, Player>
      */
-    public function paginate(int $perPage = 15, array $columns = self::DEFAULT_COLUMNS): LengthAwarePaginator
+    public function paginate(int $perPage = 15, ?PlayerStatusEnum $status = null, array $columns = self::DEFAULT_COLUMNS): LengthAwarePaginator
     {
         return Player::query()
             ->with('positions')
+            ->when(
+                $status !== null,
+                fn ($query) => $query->where('status', $status),
+                fn ($query) => $query->where('status', '!=', PlayerStatusEnum::Inactive->value),
+            )
             ->paginate($perPage, $columns);
     }
 
@@ -75,5 +85,15 @@ class PlayerService
 
             return $player;
         });
+    }
+
+    /**
+     * Transition a player to a new status (active, inactive or injured).
+     */
+    public function updateStatus(Player $player, PlayerStatusEnum $status): Player
+    {
+        $player->update(['status' => $status]);
+
+        return $player;
     }
 }
