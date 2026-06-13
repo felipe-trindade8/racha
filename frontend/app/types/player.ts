@@ -49,6 +49,7 @@ export type PlayerPayload = {
 /** Query params accepted by the player listing endpoint. */
 export type PlayerQuery = {
   status?: PlayerStatus
+  search?: string
   per_page?: number
   page?: number
 }
