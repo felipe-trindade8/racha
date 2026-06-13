@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\V1\Players\ShowPlayerController;
 use App\Http\Controllers\Api\V1\Players\StorePlayerController;
 use App\Http\Controllers\Api\V1\Players\UpdatePlayerController;
 use App\Http\Controllers\Api\V1\Players\UpdatePlayerStatusController;
+use App\Http\Controllers\Api\V1\Positions\IndexPositionController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function (): void {
@@ -19,6 +20,8 @@ Route::prefix('v1')->group(function (): void {
     Route::middleware('auth:sanctum')->group(function (): void {
         Route::post('auth/logout', LogoutController::class);
         Route::get('auth/me', MeController::class);
+
+        Route::get('positions', IndexPositionController::class);
 
         Route::get('players', IndexPlayerController::class);
         Route::post('players', StorePlayerController::class);
