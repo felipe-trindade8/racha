@@ -22,7 +22,9 @@ class IndexPlayerController extends Controller
 
         $status = PlayerStatusEnum::tryFrom((string) $request->query('status'));
 
-        $players = $this->playerService->paginate($request->integer('per_page', 15), $status);
+        $search = $request->string('search')->trim()->value() ?: null;
+
+        $players = $this->playerService->paginate($request->integer('per_page', 15), $status, $search);
 
         $players->through(fn (Player $player): PlayerResource => new PlayerResource($player));
 

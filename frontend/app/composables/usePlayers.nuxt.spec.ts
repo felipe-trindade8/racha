@@ -62,6 +62,15 @@ describe('usePlayers', () => {
     expect(loading.value).toBe(false)
   })
 
+  it('passes a search term through to the service', async () => {
+    list.mockResolvedValue({ data: [player], meta })
+
+    const { fetchList } = usePlayers()
+    await fetchList({ search: 'cafu', page: 2 })
+
+    expect(list).toHaveBeenCalledWith({ search: 'cafu', page: 2 })
+  })
+
   it('captures the error and re-throws when a fetch fails', async () => {
     const failure: ApiError = { message: 'Forbidden' }
     list.mockRejectedValue(failure)

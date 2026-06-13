@@ -33,10 +33,13 @@ class PlayerService
      * otherwise inactive players are excluded so the default listing only shows
      * the current roster (active and injured members).
      *
+     * When a search term is given the list is narrowed to players whose name or
+     * nickname contains it.
+     *
      * @param  list<string>  $columns
      * @return LengthAwarePaginator<int, Player>
      */
-    public function paginate(int $perPage = 15, ?PlayerStatusEnum $status = null, array $columns = self::DEFAULT_COLUMNS): LengthAwarePaginator
+    public function paginate(int $perPage = 15, ?PlayerStatusEnum $status = null, ?string $search = null, array $columns = self::DEFAULT_COLUMNS): LengthAwarePaginator
     {
         return Player::query()
             ->with('positions')
@@ -44,6 +47,13 @@ class PlayerService
                 $status !== null,
                 fn ($query) => $query->where('status', $status),
                 fn ($query) => $query->where('status', '!=', PlayerStatusEnum::Inactive->value),
+            )
+            ->when(
+                $search !== null && $search !== '',
+                fn ($query) => $query->where(function ($query) use ($search): void {
+                    $query->where('name', 'like', "%{$search}%")
+                        ->orWhere('nickname', 'like', "%{$search}%");
+                }),
             )
             ->paginate($perPage, $columns);
     }
