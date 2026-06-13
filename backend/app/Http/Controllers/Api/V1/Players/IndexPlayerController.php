@@ -20,11 +20,12 @@ class IndexPlayerController extends Controller
     {
         Gate::authorize('viewAny', Player::class);
 
-        $status = PlayerStatusEnum::tryFrom((string) $request->query('status'));
+        $status = PlayerStatusEnum::tryFrom($request->string('status'));
 
-        $search = $request->string('search')->trim()->value() ?: null;
+        $search = $request->string('search')->trim();
 
-        $players = $this->playerService->paginate($request->integer('per_page', 15), $status, $search);
+        $perPage = $request->integer('per_page', 15);
+        $players = $this->playerService->paginate($perPage, $status, $search);
 
         $players->through(fn (Player $player): PlayerResource => new PlayerResource($player));
 
