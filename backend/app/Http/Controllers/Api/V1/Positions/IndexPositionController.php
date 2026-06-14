@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\V1\Positions;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PositionResource;
-use App\Models\Position;
+use App\Services\PositionService;
 use Illuminate\Http\JsonResponse;
 
 /**
@@ -17,11 +17,11 @@ use Illuminate\Http\JsonResponse;
  */
 class IndexPositionController extends Controller
 {
+    public function __construct(private readonly PositionService $positionService) {}
+
     public function __invoke(): JsonResponse
     {
-        $positions = Position::query()
-            ->orderBy('id')
-            ->get(['id', 'code', 'name']);
+        $positions = $this->positionService->list();
 
         return ApiResponse::success(PositionResource::collection($positions));
     }
