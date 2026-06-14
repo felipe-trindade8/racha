@@ -10,11 +10,12 @@ it('lets an administrator generate monthly payments', function (): void {
 
     $this->withToken($admin->createToken('api')->plainTextToken)
         ->postJson('/api/v1/financial-transactions/monthly-payments', [
-            'month' => '2026-06',
+            'date' => '2026-06-14',
             'amount' => 50,
         ])
         ->assertCreated()
         ->assertJsonCount(2, 'data')
+        ->assertJsonPath('data.0.date', '2026-06-14')
         ->assertJsonStructure(['data' => [['id', 'playerId', 'description', 'amount', 'type', 'date', 'status']]]);
 
     expect(FinancialTransaction::count())->toBe(2);
@@ -24,7 +25,7 @@ it('does not duplicate when an administrator re-runs the same month', function (
     $admin = User::factory()->administrator()->create();
     Player::factory()->count(2)->create();
     $token = $admin->createToken('api')->plainTextToken;
-    $payload = ['month' => '2026-06', 'amount' => 50];
+    $payload = ['date' => '2026-06-14', 'amount' => 50];
 
     $this->withToken($token)->postJson('/api/v1/financial-transactions/monthly-payments', $payload)->assertCreated();
     $this->withToken($token)->postJson('/api/v1/financial-transactions/monthly-payments', $payload)
@@ -40,7 +41,7 @@ it('forbids a player from generating monthly payments', function (): void {
 
     $this->withToken($user->createToken('api')->plainTextToken)
         ->postJson('/api/v1/financial-transactions/monthly-payments', [
-            'month' => '2026-06',
+            'date' => '2026-06-14',
             'amount' => 50,
         ])
         ->assertStatus(403);
@@ -50,7 +51,7 @@ it('forbids a player from generating monthly payments', function (): void {
 
 it('requires authentication to generate monthly payments', function (): void {
     $this->postJson('/api/v1/financial-transactions/monthly-payments', [
-        'month' => '2026-06',
+        'date' => '2026-06-14',
         'amount' => 50,
     ])->assertStatus(401);
 });
@@ -60,9 +61,9 @@ it('validates the payload', function (): void {
 
     $this->withToken($admin->createToken('api')->plainTextToken)
         ->postJson('/api/v1/financial-transactions/monthly-payments', [
-            'month' => '2026/06',
+            'date' => '2026-06',
             'amount' => 0,
         ])
         ->assertStatus(422)
-        ->assertJsonValidationErrors(['month', 'amount']);
+        ->assertJsonValidationErrors(['date', 'amount']);
 });

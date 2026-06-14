@@ -23,7 +23,7 @@ class GenerateMonthlyPaymentsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'month' => ['required', 'string', 'date_format:Y-m'],
+            'date' => ['required', 'string', 'date_format:Y-m-d'],
             'amount' => ['required', 'numeric', 'gt:0'],
         ];
     }

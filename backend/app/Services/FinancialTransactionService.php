@@ -55,19 +55,20 @@ class FinancialTransactionService
     }
 
     /**
-     * Generate the monthly payment charge for every active player in a month.
+     * Generate the monthly payment charge for every active player.
      *
-     * Each charge is an open income transaction dated to the first day of the
-     * month, with a stable description that makes the run idempotent: re-running
-     * the same month never duplicates a player's charge. Returns the full set of
-     * monthly-payment transactions for the month (newly created and existing).
+     * Each charge is an open income transaction dated to the provided date. The
+     * run is idempotent per player and month: the stable, month-derived
+     * description makes re-running for any day of the same month never duplicate
+     * a player's charge. Returns the full set of that month's monthly-payment
+     * transactions (newly created and existing).
      *
      * @return Collection<int, FinancialTransaction>
      */
-    public function generateMonthlyPayments(string $month, string $amount): Collection
+    public function generateMonthlyPayments(string $date, string $amount): Collection
     {
-        $date = CarbonImmutable::createFromFormat('Y-m', $month)->startOfMonth();
-        $description = "Monthly payment {$month}";
+        $date = CarbonImmutable::createFromFormat('Y-m-d', $date);
+        $description = "Monthly payment {$date->format('Y-m')}";
 
         return DB::transaction(function () use ($date, $description, $amount): Collection {
             $activePlayerIds = Player::query()
@@ -75,7 +76,6 @@ class FinancialTransactionService
                 ->pluck('id');
 
             $chargedPlayerIds = FinancialTransaction::query()
-                ->whereDate('date', $date)
                 ->where('description', $description)
                 ->whereNotNull('player_id')
                 ->pluck('player_id');
@@ -95,7 +95,6 @@ class FinancialTransactionService
 
             return FinancialTransaction::query()
                 ->select(['id', 'player_id', 'description', 'amount', 'type', 'date', 'status', 'created_at', 'updated_at'])
-                ->whereDate('date', $date)
                 ->where('description', $description)
                 ->whereIn('player_id', $activePlayerIds)
                 ->orderBy('player_id')

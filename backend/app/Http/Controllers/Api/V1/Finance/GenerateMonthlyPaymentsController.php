@@ -16,7 +16,7 @@ class GenerateMonthlyPaymentsController extends Controller
     public function __invoke(GenerateMonthlyPaymentsRequest $request): JsonResponse
     {
         $transactions = $this->financialTransactionService->generateMonthlyPayments(
-            $request->validated('month'),
+            $request->validated('date'),
             (string) $request->validated('amount'),
         );
 
