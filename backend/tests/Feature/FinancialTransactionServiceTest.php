@@ -52,6 +52,22 @@ it('leaves the player null when no player_id is provided', function (): void {
     expect($transaction->player_id)->toBeNull();
 });
 
+it('updates a transaction attributes', function (): void {
+    $transaction = $this->service->create($this->baseData);
+
+    $this->service->update($transaction, [
+        'description' => 'Referee fee',
+        'amount' => 80,
+        'type' => FinancialTransactionTypeEnum::Income,
+    ]);
+
+    $transaction = $transaction->fresh();
+
+    expect($transaction->description)->toBe('Referee fee')
+        ->and($transaction->amount)->toBe('80.00')
+        ->and($transaction->type)->toBe(FinancialTransactionTypeEnum::Income);
+});
+
 it('transitions a transaction to the paid status', function (): void {
     $transaction = $this->service->create($this->baseData);
 

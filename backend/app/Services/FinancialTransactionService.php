@@ -36,6 +36,20 @@ class FinancialTransactionService
     }
 
     /**
+     * Update a transaction's attributes.
+     *
+     * @param  array<string, mixed>  $data
+     */
+    public function update(FinancialTransaction $transaction, array $data): FinancialTransaction
+    {
+        return DB::transaction(function () use ($transaction, $data): FinancialTransaction {
+            $transaction->update($data);
+
+            return $transaction;
+        });
+    }
+
+    /**
      * Transition a transaction to a new status (open or paid).
      */
     public function updateStatus(FinancialTransaction $transaction, FinancialTransactionStatusEnum $status): FinancialTransaction
