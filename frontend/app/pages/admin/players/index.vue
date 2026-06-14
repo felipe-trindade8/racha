@@ -83,10 +83,10 @@ function onStatusChange(value: string) {
       <h1 class="text-2xl font-semibold text-default">Players</h1>
       <UButton
         v-if="isAdmin"
+        to="/admin/players/new"
         icon="i-lucide-plus"
         label="New player"
         color="primary"
-        disabled
       />
     </div>
 
@@ -129,9 +129,19 @@ function onStatusChange(value: string) {
                 {{ player.nickname }}
               </p>
             </div>
-            <UBadge :color="statusBadgeColor[player.status]" variant="subtle" class="shrink-0">
-              {{ player.status }}
-            </UBadge>
+            <div class="flex shrink-0 items-center gap-2">
+              <UBadge :color="statusBadgeColor[player.status]" variant="subtle">
+                {{ player.status }}
+              </UBadge>
+              <UButton
+                :to="`/admin/players/${player.id}/edit`"
+                icon="i-lucide-pencil"
+                color="neutral"
+                variant="ghost"
+                size="sm"
+                :aria-label="`Edit ${player.name}`"
+              />
+            </div>
           </div>
 
           <div class="mt-3 flex flex-wrap items-center gap-2">
@@ -153,11 +163,7 @@ function onStatusChange(value: string) {
     </ul>
 
     <div v-if="meta && meta.last_page > 1" class="flex justify-center">
-      <UPagination
-        v-model:page="page"
-        :total="meta.total"
-        :items-per-page="PER_PAGE"
-      />
+      <UPagination v-model:page="page" :total="meta.total" :items-per-page="PER_PAGE" />
     </div>
   </div>
 </template>

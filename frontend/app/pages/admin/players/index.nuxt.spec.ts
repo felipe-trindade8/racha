@@ -63,12 +63,12 @@ describe('players list page', () => {
     expect(wrapper.text()).toContain('RB')
   })
 
-  it('shows a disabled create button for an administrator', async () => {
+  it('links the create button to the new player page for an administrator', async () => {
     const wrapper = await mountSuspended(PlayersPage)
 
-    const createButton = wrapper.findAll('button').find((b) => b.text().includes('New player'))
-    expect(createButton).toBeDefined()
-    expect(createButton!.attributes('disabled')).toBeDefined()
+    const createLink = wrapper.findAll('a').find((a) => a.text().includes('New player'))
+    expect(createLink).toBeDefined()
+    expect(createLink!.attributes('href')).toBe('/admin/players/new')
   })
 
   it('hides the create button from a non-administrator', async () => {
@@ -96,9 +96,7 @@ describe('players list page', () => {
     vi.advanceTimersByTime(300)
     await flushPromises()
 
-    expect(fetchList).toHaveBeenCalledWith(
-      expect.objectContaining({ search: 'cafu', page: 1 }),
-    )
+    expect(fetchList).toHaveBeenCalledWith(expect.objectContaining({ search: 'cafu', page: 1 }))
   })
 
   it('surfaces the error message from the composable', async () => {
