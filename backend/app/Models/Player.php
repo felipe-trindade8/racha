@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use InvalidArgumentException;
 
 #[Fillable(['name', 'nickname', 'rating', 'status', 'phone'])]
@@ -55,5 +56,15 @@ class Player extends Model
     public function positions(): BelongsToMany
     {
         return $this->belongsToMany(Position::class, 'player_positions');
+    }
+
+    /**
+     * The financial transactions associated with this player.
+     *
+     * @return HasMany<FinancialTransaction, $this>
+     */
+    public function financialTransactions(): HasMany
+    {
+        return $this->hasMany(FinancialTransaction::class);
     }
 }
