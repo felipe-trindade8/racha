@@ -102,8 +102,10 @@ class PlayerService
      */
     public function updateStatus(Player $player, PlayerStatusEnum $status): Player
     {
-        $player->update(['status' => $status]);
+        return DB::transaction(function () use ($player, $status): Player {
+            $player->update(['status' => $status]);
 
-        return $player;
+            return $player;
+        });
     }
 }

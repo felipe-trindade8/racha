@@ -52,6 +52,9 @@ Examples:
 - Always specify the columns to select in queries; never rely on `select *`.
 - Cross-cutting, stateless utility classes live in `app/Helpers` (`App\Helpers`),
   e.g. `ApiResponse` for the standard JSON envelopes.
+- Wrap database writes in a transaction (`DB::transaction`), including
+  single-statement writes, so persistence stays consistent and the pattern is
+  uniform across Services.
 
 ### Migrations
 
