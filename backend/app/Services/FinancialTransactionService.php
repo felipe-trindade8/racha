@@ -3,7 +3,12 @@
 namespace App\Services;
 
 use App\Enums\FinancialTransactionStatusEnum;
+use App\Enums\FinancialTransactionTypeEnum;
+use App\Enums\PlayerStatusEnum;
 use App\Models\FinancialTransaction;
+use App\Models\Player;
+use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
@@ -46,6 +51,54 @@ class FinancialTransactionService
             $transaction->update($data);
 
             return $transaction;
+        });
+    }
+
+    /**
+     * Generate the monthly payment charge for every active player.
+     *
+     * Each charge is an open income transaction dated to the provided date. The
+     * run is idempotent per player and month: the stable, month-derived
+     * description makes re-running for any day of the same month never duplicate
+     * a player's charge. Returns the full set of that month's monthly-payment
+     * transactions (newly created and existing).
+     *
+     * @return Collection<int, FinancialTransaction>
+     */
+    public function generateMonthlyPayments(string $date, string $amount): Collection
+    {
+        $date = CarbonImmutable::createFromFormat('Y-m-d', $date);
+        $description = "Monthly payment {$date->format('Y-m')}";
+
+        return DB::transaction(function () use ($date, $description, $amount): Collection {
+            $activePlayerIds = Player::query()
+                ->where('status', PlayerStatusEnum::Active)
+                ->pluck('id');
+
+            $chargedPlayerIds = FinancialTransaction::query()
+                ->where('description', $description)
+                ->whereNotNull('player_id')
+                ->pluck('player_id');
+
+            $missingPlayerIds = $activePlayerIds->diff($chargedPlayerIds);
+
+            foreach ($missingPlayerIds as $playerId) {
+                FinancialTransaction::create([
+                    'player_id' => $playerId,
+                    'description' => $description,
+                    'amount' => $amount,
+                    'type' => FinancialTransactionTypeEnum::Income,
+                    'date' => $date,
+                    'status' => FinancialTransactionStatusEnum::Open,
+                ]);
+            }
+
+            return FinancialTransaction::query()
+                ->select(['id', 'player_id', 'description', 'amount', 'type', 'date', 'status', 'created_at', 'updated_at'])
+                ->where('description', $description)
+                ->whereIn('player_id', $activePlayerIds)
+                ->orderBy('player_id')
+                ->get();
         });
     }
 
