@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests\Finance;
 
+use App\Enums\FinancialTransactionStatusEnum;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class PayFinancialTransactionRequest extends FormRequest
+class UpdateFinancialTransactionStatusRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -17,12 +19,12 @@ class PayFinancialTransactionRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * The pay action carries no body: it transitions the transaction to `paid`.
-     *
      * @return array<string, array<int, mixed>>
      */
     public function rules(): array
     {
-        return [];
+        return [
+            'status' => ['required', Rule::enum(FinancialTransactionStatusEnum::class)],
+        ];
     }
 }

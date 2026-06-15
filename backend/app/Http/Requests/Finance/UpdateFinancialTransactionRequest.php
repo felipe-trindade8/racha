@@ -2,7 +2,10 @@
 
 namespace App\Http\Requests\Finance;
 
+use App\Enums\FinancialTransactionStatusEnum;
 use App\Enums\FinancialTransactionTypeEnum;
+use App\Models\FinancialTransaction;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -34,5 +37,26 @@ class UpdateFinancialTransactionRequest extends FormRequest
             'type' => ['sometimes', 'required', Rule::enum(FinancialTransactionTypeEnum::class)],
             'date' => ['sometimes', 'required', 'date_format:Y-m-d'],
         ];
+    }
+
+    /**
+     * Configure the validator instance.
+     *
+     * A paid transaction is locked: its details can only be edited after it is
+     * reopened through the status endpoint. This keeps a settled record from
+     * being changed underneath its paid state.
+     */
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $validator): void {
+            $transaction = $this->route('financialTransaction');
+
+            if ($transaction instanceof FinancialTransaction && $transaction->status === FinancialTransactionStatusEnum::Paid) {
+                $validator->errors()->add(
+                    'status',
+                    'A paid transaction cannot be edited. Reopen it before editing.',
+                );
+            }
+        });
     }
 }

@@ -23,6 +23,36 @@ it('lets an administrator update a transaction', function (): void {
     expect($transaction->fresh()->description)->toBe('Updated');
 });
 
+it('forbids editing a paid transaction', function (): void {
+    $admin = User::factory()->administrator()->create();
+    $transaction = FinancialTransaction::factory()->paid()->create(['description' => 'Settled']);
+
+    $this->withToken($admin->createToken('api')->plainTextToken)
+        ->putJson("/api/v1/financial-transactions/{$transaction->id}", [
+            'description' => 'Changed',
+        ])
+        ->assertStatus(422)
+        ->assertJsonValidationErrors(['status']);
+
+    expect($transaction->fresh()->description)->toBe('Settled');
+});
+
+it('allows editing again once a paid transaction is reopened', function (): void {
+    $admin = User::factory()->administrator()->create();
+    $token = $admin->createToken('api')->plainTextToken;
+    $transaction = FinancialTransaction::factory()->paid()->create(['description' => 'Original']);
+
+    $this->withToken($token)
+        ->patchJson("/api/v1/financial-transactions/{$transaction->id}/status", ['status' => 'open'])
+        ->assertOk();
+
+    $this->withToken($token)
+        ->putJson("/api/v1/financial-transactions/{$transaction->id}", ['description' => 'Edited'])
+        ->assertOk();
+
+    expect($transaction->fresh()->description)->toBe('Edited');
+});
+
 it('forbids a player from updating a transaction', function (): void {
     $player = Player::factory()->create();
     $user = User::factory()->create(['player_id' => $player->id]);

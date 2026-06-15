@@ -165,3 +165,9 @@ Represents any money movement in the group.
 - Type (income/expense)
 - Date
 - Status (open/paid)
+
+Business rules:
+
+- A transaction's details (player, description, amount, type, date) can only
+  be edited while it is `open`. A `paid` transaction is locked and must be
+  reopened (status back to `open`) before any further edit.
