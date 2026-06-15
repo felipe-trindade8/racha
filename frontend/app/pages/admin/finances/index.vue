@@ -142,7 +142,16 @@ async function onReopen(transaction: FinancialTransaction) {
   <div class="mx-auto flex max-w-2xl flex-col gap-4">
     <div class="flex items-center justify-between gap-3">
       <h1 class="text-2xl font-semibold text-default">Finances</h1>
-      <UButton icon="i-lucide-plus" label="New transaction" color="primary" @click="openCreate" />
+      <div class="flex items-center gap-2">
+        <UButton
+          to="/admin/finances/cash-flow"
+          icon="i-lucide-chart-column"
+          label="Cash flow"
+          color="neutral"
+          variant="subtle"
+        />
+        <UButton icon="i-lucide-plus" label="New transaction" color="primary" @click="openCreate" />
+      </div>
     </div>
 
     <div class="flex flex-col gap-3 sm:flex-row">
