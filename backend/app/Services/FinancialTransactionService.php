@@ -8,6 +8,7 @@ use App\Enums\PlayerStatusEnum;
 use App\Models\FinancialTransaction;
 use App\Models\Player;
 use Carbon\CarbonImmutable;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -23,6 +24,45 @@ use Illuminate\Support\Facades\DB;
  */
 class FinancialTransactionService
 {
+    /**
+     * The columns selected when listing transactions.
+     *
+     * @var list<string>
+     */
+    private const DEFAULT_COLUMNS = ['id', 'player_id', 'description', 'amount', 'type', 'date', 'status', 'created_at', 'updated_at'];
+
+    /**
+     * Return a paginated list of transactions, newest first.
+     *
+     * Each filter is optional and only narrows the result when provided: `type`
+     * and `status` match exactly, `playerId` matches the owning player, and
+     * `month` (a `Y-m` string) restricts the list to that calendar month.
+     *
+     * @param  list<string>  $columns
+     * @return LengthAwarePaginator<int, FinancialTransaction>
+     */
+    public function paginate(
+        int $perPage = 15,
+        ?FinancialTransactionTypeEnum $type = null,
+        ?FinancialTransactionStatusEnum $status = null,
+        ?string $month = null,
+        ?int $playerId = null,
+        array $columns = self::DEFAULT_COLUMNS,
+    ): LengthAwarePaginator {
+        return FinancialTransaction::query()
+            ->when($type !== null, fn ($query) => $query->where('type', $type))
+            ->when($status !== null, fn ($query) => $query->where('status', $status))
+            ->when($playerId !== null, fn ($query) => $query->where('player_id', $playerId))
+            ->when($month !== null && $month !== '', function ($query) use ($month): void {
+                $start = CarbonImmutable::createFromFormat('Y-m', $month)->startOfMonth();
+
+                $query->whereBetween('date', [$start, $start->endOfMonth()]);
+            })
+            ->orderByDesc('date')
+            ->orderByDesc('id')
+            ->paginate($perPage, $columns);
+    }
+
     /**
      * Create a financial transaction.
      *

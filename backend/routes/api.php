@@ -4,6 +4,10 @@ use App\Http\Controllers\Api\V1\Auth\LoginController;
 use App\Http\Controllers\Api\V1\Auth\LogoutController;
 use App\Http\Controllers\Api\V1\Auth\MeController;
 use App\Http\Controllers\Api\V1\Finance\GenerateMonthlyPaymentsController;
+use App\Http\Controllers\Api\V1\Finance\IndexFinancialTransactionController;
+use App\Http\Controllers\Api\V1\Finance\StoreFinancialTransactionController;
+use App\Http\Controllers\Api\V1\Finance\UpdateFinancialTransactionController;
+use App\Http\Controllers\Api\V1\Finance\UpdateFinancialTransactionStatusController;
 use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\Players\IndexPlayerController;
 use App\Http\Controllers\Api\V1\Players\ShowPlayerController;
@@ -31,5 +35,9 @@ Route::prefix('v1')->group(function (): void {
         Route::patch('players/{player}/status', UpdatePlayerStatusController::class);
 
         Route::post('financial-transactions/monthly-payments', GenerateMonthlyPaymentsController::class);
+        Route::get('financial-transactions', IndexFinancialTransactionController::class);
+        Route::post('financial-transactions', StoreFinancialTransactionController::class);
+        Route::put('financial-transactions/{financialTransaction}', UpdateFinancialTransactionController::class);
+        Route::patch('financial-transactions/{financialTransaction}/status', UpdateFinancialTransactionStatusController::class);
     });
 });
