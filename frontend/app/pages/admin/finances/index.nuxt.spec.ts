@@ -3,6 +3,7 @@ import { mountSuspended, mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { flushPromises } from '@vue/test-utils'
 import { ref } from 'vue'
 import FinancesPage from './index.vue'
+import MonthlyPaymentForm from '~/components/MonthlyPaymentForm.vue'
 import type { PaginationMeta } from '~/types/api'
 import { TransactionStatus, TransactionType, type FinancialTransaction } from '~/types/finance'
 
@@ -27,6 +28,7 @@ const create = vi.fn()
 const update = vi.fn()
 const pay = vi.fn()
 const reopen = vi.fn()
+const generateMonthly = vi.fn()
 
 const roster = ref([{ id: 7, name: 'Marcos Cafu', nickname: 'Cafu' }])
 const loadRoster = vi.fn()
@@ -42,6 +44,7 @@ mockNuxtImport('useFinances', () => () => ({
   update,
   pay,
   reopen,
+  generateMonthly,
 }))
 mockNuxtImport('usePlayers', () => () => ({ players: roster, fetchList: loadRoster }))
 mockNuxtImport('useAuth', () => () => ({ isAdmin }))
@@ -122,5 +125,33 @@ describe('finances list page', () => {
     const wrapper = await mountSuspended(FinancesPage)
 
     expect(wrapper.text()).toContain('Something went wrong.')
+  })
+
+  it('offers a generate monthly payments action to an administrator', async () => {
+    const wrapper = await mountSuspended(FinancesPage)
+
+    const button = wrapper.findAll('button').find((b) => b.text().includes('Generate monthly'))
+    expect(button).toBeDefined()
+  })
+
+  it('generates monthly payments and refreshes the list on submit', async () => {
+    generateMonthly.mockResolvedValue([monthlyFee, { ...monthlyFee, id: 2 }])
+    const wrapper = await mountSuspended(FinancesPage)
+
+    // Open the modal so the form mounts, then drive it via its submit emit.
+    const button = wrapper.findAll('button').find((b) => b.text().includes('Generate monthly'))
+    await button!.trigger('click')
+    await flushPromises()
+
+    fetchList.mockClear()
+    const form = wrapper.findComponent(MonthlyPaymentForm)
+    expect(form.exists()).toBe(true)
+    form.vm.$emit('submit', { date: '2026-06-15', amount: 50 })
+    await flushPromises()
+
+    expect(generateMonthly).toHaveBeenCalledWith({ date: '2026-06-15', amount: 50 })
+    // The list is refetched so the generated charges appear.
+    expect(fetchList).toHaveBeenCalledTimes(1)
+    expect(wrapper.text()).toContain('2 monthly payment(s) for 2026-06.')
   })
 })

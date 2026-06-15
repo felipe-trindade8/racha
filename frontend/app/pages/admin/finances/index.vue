@@ -16,6 +16,7 @@ import {
   type FinancialTransaction,
   type FinancialTransactionPayload,
   type FinancialTransactionQuery,
+  type MonthlyPaymentPayload,
 } from '~/types/finance'
 
 definePageMeta({ middleware: 'admin' })
@@ -23,7 +24,18 @@ definePageMeta({ middleware: 'admin' })
 const PER_PAGE = 15
 const ALL = 'all'
 
-const { transactions, meta, loading, error, fetchList, create, update, pay, reopen } = useFinances()
+const {
+  transactions,
+  meta,
+  loading,
+  error,
+  fetchList,
+  create,
+  update,
+  pay,
+  reopen,
+  generateMonthly,
+} = useFinances()
 const { players: roster, fetchList: loadRoster } = usePlayers()
 
 const typeFilter = ref<string>(ALL)
@@ -136,6 +148,36 @@ async function onReopen(transaction: FinancialTransaction) {
     // Surfaced through `error`.
   }
 }
+
+// --- Generate monthly payments modal ---------------------------------------
+const generateOpen = ref(false)
+const generateError = ref<string | null>(null)
+const generateValidationErrors = ref<ValidationErrors | null>(null)
+const generateSuccess = ref<string | null>(null)
+
+function openGenerate() {
+  generateError.value = null
+  generateValidationErrors.value = null
+  generateOpen.value = true
+}
+
+async function onGenerate(payload: MonthlyPaymentPayload) {
+  generateError.value = null
+  generateValidationErrors.value = null
+  generateSuccess.value = null
+
+  try {
+    const created = await generateMonthly(payload)
+    await load()
+    generateOpen.value = false
+    const month = payload.date.slice(0, 7)
+    generateSuccess.value = `${created.length} monthly payment(s) for ${month}.`
+  } catch (e) {
+    const apiError = e as ApiError
+    generateError.value = apiError.message
+    generateValidationErrors.value = apiError.errors ?? null
+  }
+}
 </script>
 
 <template>
@@ -150,6 +192,13 @@ async function onReopen(transaction: FinancialTransaction) {
           color="neutral"
           variant="subtle"
         />
+        <UButton
+          icon="i-lucide-calendar-plus"
+          label="Generate monthly"
+          color="neutral"
+          variant="subtle"
+          @click="openGenerate"
+        />
         <UButton icon="i-lucide-plus" label="New transaction" color="primary" @click="openCreate" />
       </div>
     </div>
@@ -159,6 +208,16 @@ async function onReopen(transaction: FinancialTransaction) {
       <USelect v-model="statusFilter" :items="statusItems" class="w-full sm:w-40" />
       <UInput v-model="monthFilter" type="month" class="w-full sm:w-44" aria-label="Month" />
     </div>
+
+    <UAlert
+      v-if="generateSuccess"
+      color="success"
+      variant="subtle"
+      icon="i-lucide-circle-check"
+      :title="generateSuccess"
+      :close="true"
+      @update:open="generateSuccess = null"
+    />
 
     <UAlert
       v-if="error"
@@ -249,6 +308,17 @@ async function onReopen(transaction: FinancialTransaction) {
           :server-error="serverError"
           :validation-errors="validationErrors"
           @submit="onSubmit"
+        />
+      </template>
+    </UModal>
+
+    <UModal v-model:open="generateOpen" title="Generate monthly payments">
+      <template #body>
+        <MonthlyPaymentForm
+          :submitting="loading"
+          :server-error="generateError"
+          :validation-errors="generateValidationErrors"
+          @submit="onGenerate"
         />
       </template>
     </UModal>
