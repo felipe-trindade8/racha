@@ -14,5 +14,13 @@ definePageMeta({ middleware: 'admin' })
       label="Players"
       class="w-fit"
     />
+    <UButton
+      to="/admin/finances"
+      color="primary"
+      variant="subtle"
+      icon="i-lucide-wallet"
+      label="Finances"
+      class="w-fit"
+    />
   </div>
 </template>
