@@ -64,6 +64,80 @@ class FinancialTransactionService
     }
 
     /**
+     * Build a cash-flow summary: overall totals plus a per-month breakdown.
+     *
+     * Only the chosen status is considered. Cash flow defaults to `paid`
+     * transactions (realized money), so by default `balance = paid income −
+     * paid expense`; passing `open` reports pending movements and `null`
+     * (the `all` filter) reports both. The `from`/`to` bounds are `Y-m`
+     * strings and, when given, restrict the summary to that inclusive month
+     * range. Amounts are summed with bcmath to avoid float drift, and months
+     * are grouped in PHP so the calculation stays database-driver agnostic.
+     *
+     * @return array{
+     *     range: array{from: string|null, to: string|null},
+     *     status: string,
+     *     totals: array{income: string, expense: string, balance: string},
+     *     monthly: list<array{month: string, income: string, expense: string, balance: string}>
+     * }
+     */
+    public function cashFlow(?string $from = null, ?string $to = null, ?FinancialTransactionStatusEnum $status = FinancialTransactionStatusEnum::Paid): array
+    {
+        $transactions = FinancialTransaction::query()
+            ->select(['type', 'amount', 'date'])
+            ->when($status !== null, fn ($query) => $query->where('status', $status))
+            ->when($from !== null, fn ($query) => $query->whereDate('date', '>=', CarbonImmutable::createFromFormat('Y-m', $from)->startOfMonth()))
+            ->when($to !== null, fn ($query) => $query->whereDate('date', '<=', CarbonImmutable::createFromFormat('Y-m', $to)->endOfMonth()))
+            ->orderBy('date')
+            ->get();
+
+        $income = '0.00';
+        $expense = '0.00';
+
+        /** @var array<string, array{income: string, expense: string}> $months */
+        $months = [];
+
+        foreach ($transactions as $transaction) {
+            $month = $transaction->date->format('Y-m');
+            $months[$month] ??= ['income' => '0.00', 'expense' => '0.00'];
+
+            $bucket = $transaction->type === FinancialTransactionTypeEnum::Income ? 'income' : 'expense';
+
+            $months[$month][$bucket] = bcadd($months[$month][$bucket], (string) $transaction->amount, 2);
+
+            if ($bucket === 'income') {
+                $income = bcadd($income, (string) $transaction->amount, 2);
+            } else {
+                $expense = bcadd($expense, (string) $transaction->amount, 2);
+            }
+        }
+
+        ksort($months);
+
+        $monthly = [];
+
+        foreach ($months as $month => $sums) {
+            $monthly[] = [
+                'month' => $month,
+                'income' => $sums['income'],
+                'expense' => $sums['expense'],
+                'balance' => bcsub($sums['income'], $sums['expense'], 2),
+            ];
+        }
+
+        return [
+            'range' => ['from' => $from, 'to' => $to],
+            'status' => $status?->value ?? 'all',
+            'totals' => [
+                'income' => $income,
+                'expense' => $expense,
+                'balance' => bcsub($income, $expense, 2),
+            ],
+            'monthly' => $monthly,
+        ];
+    }
+
+    /**
      * Create a financial transaction.
      *
      * @param  array<string, mixed>  $data

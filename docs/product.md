@@ -171,3 +171,8 @@ Business rules:
 - A transaction's details (player, description, amount, type, date) can only
   be edited while it is `open`. A `paid` transaction is locked and must be
   reopened (status back to `open`) before any further edit.
+- Cash flow reports `income`, `expense` and `balance = income − expense`. By
+  default it considers only `paid` transactions (realized money), so the
+  default balance is `paid income − paid expense`. The cash-flow endpoint
+  accepts a `status` filter (`paid` default, `open`, or `all`) to also report
+  pending or combined movements, and an optional `from`/`to` month range.
