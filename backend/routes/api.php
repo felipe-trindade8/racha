@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\V1\Auth\LoginController;
 use App\Http\Controllers\Api\V1\Auth\LogoutController;
 use App\Http\Controllers\Api\V1\Auth\MeController;
+use App\Http\Controllers\Api\V1\Finance\CashFlowController;
 use App\Http\Controllers\Api\V1\Finance\GenerateMonthlyPaymentsController;
 use App\Http\Controllers\Api\V1\Finance\IndexFinancialTransactionController;
 use App\Http\Controllers\Api\V1\Finance\StoreFinancialTransactionController;
@@ -35,6 +36,7 @@ Route::prefix('v1')->group(function (): void {
         Route::patch('players/{player}/status', UpdatePlayerStatusController::class);
 
         Route::post('financial-transactions/monthly-payments', GenerateMonthlyPaymentsController::class);
+        Route::get('financial-transactions/cash-flow', CashFlowController::class);
         Route::get('financial-transactions', IndexFinancialTransactionController::class);
         Route::post('financial-transactions', StoreFinancialTransactionController::class);
         Route::put('financial-transactions/{financialTransaction}', UpdateFinancialTransactionController::class);
