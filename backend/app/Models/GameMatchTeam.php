@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable(['game_match_id', 'team_name', 'result'])]
 class GameMatchTeam extends Model
@@ -22,5 +23,15 @@ class GameMatchTeam extends Model
     public function gameMatch(): BelongsTo
     {
         return $this->belongsTo(GameMatch::class);
+    }
+
+    /**
+     * The players rostered on this team for the match.
+     *
+     * @return HasMany<TeamPlayer, $this>
+     */
+    public function teamPlayers(): HasMany
+    {
+        return $this->hasMany(TeamPlayer::class);
     }
 }
