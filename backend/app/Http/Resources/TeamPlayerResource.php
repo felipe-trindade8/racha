@@ -2,14 +2,14 @@
 
 namespace App\Http\Resources;
 
-use App\Models\GameMatchTeam;
+use App\Models\TeamPlayer;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * @mixin GameMatchTeam
+ * @mixin TeamPlayer
  */
-class GameMatchTeamResource extends JsonResource
+class TeamPlayerResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -23,9 +23,11 @@ class GameMatchTeamResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'teamName' => $this->team_name,
-            'result' => $this->result,
-            'players' => TeamPlayerResource::collection($this->whenLoaded('teamPlayers')),
+            'playerId' => $this->player_id,
+            'positionId' => $this->position_id,
+            'gameRating' => $this->game_rating,
+            'isStarter' => $this->is_starter,
+            'player' => new PlayerResource($this->whenLoaded('player')),
         ];
     }
 }

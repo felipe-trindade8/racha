@@ -6,13 +6,15 @@ use App\Enums\GameMatchStatusEnum;
 use App\Models\GameMatch;
 use App\Models\GameMatchTeam;
 use App\Models\TeamPlayer;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 /**
- * Encapsulates the match business rules: creating a match with its two teams
- * and rosters, and recording its score, each in a single transaction.
+ * Encapsulates the match business rules: listing matches, creating one with its
+ * two teams and rosters, updating it and recording its score. Each write runs in
+ * a single transaction.
  *
  * On create, the two structural rules this service owns are that a match has
  * exactly two teams and that no player is rostered more than once; both are
@@ -23,6 +25,35 @@ use Illuminate\Validation\ValidationException;
  */
 class GameMatchService
 {
+    /**
+     * The match columns selected by default when listing.
+     *
+     * @var list<string>
+     */
+    private const DEFAULT_COLUMNS = ['id', 'date', 'team_a_id', 'team_b_id', 'status', 'created_at', 'updated_at'];
+
+    /**
+     * Return a paginated list of matches with their teams eager-loaded, newest
+     * first.
+     *
+     * Each filter is optional and only narrows the result when provided: `status`
+     * matches exactly and `date` (a `Y-m-d` string) restricts the list to matches
+     * played on that day.
+     *
+     * @param  list<string>  $columns
+     * @return LengthAwarePaginator<int, GameMatch>
+     */
+    public function paginate(int $perPage = 15, ?GameMatchStatusEnum $status = null, ?string $date = null, array $columns = self::DEFAULT_COLUMNS): LengthAwarePaginator
+    {
+        return GameMatch::query()
+            ->with('teams')
+            ->when($status !== null, fn ($query) => $query->where('status', $status))
+            ->when($date !== null && $date !== '', fn ($query) => $query->whereDate('date', $date))
+            ->orderByDesc('date')
+            ->orderByDesc('id')
+            ->paginate($perPage, $columns);
+    }
+
     /**
      * Create a match with its two teams and their rosters.
      *
@@ -66,6 +97,24 @@ class GameMatchService
             ]);
 
             return $match->load('teams.teamPlayers');
+        });
+    }
+
+    /**
+     * Update a match's own attributes.
+     *
+     * Only the match date is editable here: status is transitioned through the
+     * dedicated score endpoint and the team/roster composition is fixed at
+     * creation, so neither is touched by the generic update.
+     *
+     * @param  array<string, mixed>  $data
+     */
+    public function update(GameMatch $match, array $data): GameMatch
+    {
+        return DB::transaction(function () use ($match, $data): GameMatch {
+            $match->update(Arr::only($data, ['date']));
+
+            return $match;
         });
     }
 
