@@ -55,6 +55,37 @@ class GameMatchService
     }
 
     /**
+     * Return a paginated history of finished matches with both teams' results,
+     * newest first.
+     *
+     * Each team's result is pulled in a single query by joining the teams table
+     * twice (one alias per side). The inner joins also require both teams to be
+     * present, so only fully-formed finished matches appear.
+     *
+     * @return LengthAwarePaginator<int, GameMatch>
+     */
+    public function history(int $perPage = 15): LengthAwarePaginator
+    {
+        return GameMatch::query()
+            ->join('game_match_teams as team_a', 'team_a.id', '=', 'game_matches.team_a_id')
+            ->join('game_match_teams as team_b', 'team_b.id', '=', 'game_matches.team_b_id')
+            ->where('game_matches.status', GameMatchStatusEnum::Finished)
+            ->orderByDesc('game_matches.date')
+            ->orderByDesc('game_matches.id')
+            ->paginate($perPage, [
+                'game_matches.id',
+                'game_matches.date',
+                'game_matches.status',
+                'game_matches.team_a_id',
+                'game_matches.team_b_id',
+                'team_a.team_name as team_a_name',
+                'team_a.result as team_a_result',
+                'team_b.team_name as team_b_name',
+                'team_b.result as team_b_result',
+            ]);
+    }
+
+    /**
      * Create a match with its two teams and their rosters.
      *
      * Expected shape:

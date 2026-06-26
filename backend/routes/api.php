@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\V1\Finance\StoreFinancialTransactionController;
 use App\Http\Controllers\Api\V1\Finance\UpdateFinancialTransactionController;
 use App\Http\Controllers\Api\V1\Finance\UpdateFinancialTransactionStatusController;
 use App\Http\Controllers\Api\V1\HealthController;
+use App\Http\Controllers\Api\V1\Matches\GameMatchHistoryController;
 use App\Http\Controllers\Api\V1\Matches\IndexGameMatchController;
 use App\Http\Controllers\Api\V1\Matches\RecordGameMatchScoreController;
 use App\Http\Controllers\Api\V1\Matches\ShowGameMatchController;
@@ -41,6 +42,7 @@ Route::prefix('v1')->group(function (): void {
         Route::patch('players/{player}/status', UpdatePlayerStatusController::class);
 
         Route::get('matches', IndexGameMatchController::class);
+        Route::get('matches/history', GameMatchHistoryController::class);
         Route::post('matches', StoreGameMatchController::class);
         Route::get('matches/{gameMatch}', ShowGameMatchController::class);
         Route::put('matches/{gameMatch}', UpdateGameMatchController::class);
