@@ -8,6 +8,14 @@ const { user, isAdmin } = useAuth()
     <p class="text-muted">Weekly soccer, organized.</p>
     <div class="flex flex-wrap gap-3">
       <UButton
+        to="/matches"
+        color="neutral"
+        variant="subtle"
+        icon="i-lucide-calendar-days"
+        label="Matches"
+        class="w-fit"
+      />
+      <UButton
         v-if="isAdmin"
         to="/admin"
         color="primary"
