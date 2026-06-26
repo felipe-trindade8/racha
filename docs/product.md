@@ -116,6 +116,15 @@ Represents played and planned matches. Named `GameMatch` (table
 - Team B Id
 - Status
 
+Business rules:
+
+- Recording a score sets each team's `result` and moves the match from
+  `planned` to `finished`, optionally capturing a per-player `game_rating`
+  (1–5).
+- A `finished` match is locked: it cannot be scored again until it is
+  reopened (status back to `planned`). This keeps a settled result from
+  being overwritten underneath its finished state.
+
 ### GameMatchTeam
 
 Represents teams that play matches. There should be only 2 per match.

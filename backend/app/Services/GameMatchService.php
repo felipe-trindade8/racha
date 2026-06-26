@@ -5,20 +5,21 @@ namespace App\Services;
 use App\Enums\GameMatchStatusEnum;
 use App\Models\GameMatch;
 use App\Models\GameMatchTeam;
+use App\Models\TeamPlayer;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 /**
- * Encapsulates the match creation business rules: persisting a match together
- * with its two teams and their roster assignments in a single transaction.
+ * Encapsulates the match business rules: creating a match with its two teams
+ * and rosters, and recording its score, each in a single transaction.
  *
- * The two structural rules this service owns are that a match has exactly two
- * teams and that no player is rostered more than once. Both are checked before
- * the transaction opens, so a rejected input never writes a partial match.
- * Field-level validation (presence of a team name, existence of players) lives
- * in the Form Request that drives the endpoint; this service trusts the shape
- * it receives.
+ * On create, the two structural rules this service owns are that a match has
+ * exactly two teams and that no player is rostered more than once; both are
+ * checked before the transaction opens, so a rejected input never writes a
+ * partial match. Field-level and state validation (team name presence, player
+ * existence, the finished-match scoring guard) lives in the Form Requests that
+ * drive the endpoints; this service trusts the shape it receives.
  */
 class GameMatchService
 {
@@ -65,6 +66,40 @@ class GameMatchService
             ]);
 
             return $match->load('teams.teamPlayers');
+        });
+    }
+
+    /**
+     * Record a match's score: set each team's result, apply any per-player
+     * ratings and move the match to finished, all in one transaction.
+     *
+     * The finished-match guard (a finished match must be reopened before it can
+     * be scored again) and the shape of the payload are enforced by the Form
+     * Request, so this service trusts the data it receives.
+     *
+     * Expected shape:
+     *   [
+     *     'team_a_result'  => string,
+     *     'team_b_result'  => string,
+     *     'player_ratings' => [['team_player_id' => int, 'game_rating' => int], ...],
+     *   ]
+     *
+     * @param  array<string, mixed>  $data
+     */
+    public function recordScore(GameMatch $match, array $data): GameMatch
+    {
+        return DB::transaction(function () use ($match, $data): GameMatch {
+            $match->teamA?->update(['result' => $data['team_a_result']]);
+            $match->teamB?->update(['result' => $data['team_b_result']]);
+
+            foreach (Arr::get($data, 'player_ratings', []) as $rating) {
+                TeamPlayer::whereKey($rating['team_player_id'])
+                    ->update(['game_rating' => $rating['game_rating']]);
+            }
+
+            $match->update(['status' => GameMatchStatusEnum::Finished]);
+
+            return $match->load('teams');
         });
     }
 
