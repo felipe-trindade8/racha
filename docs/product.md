@@ -105,9 +105,10 @@ Represents a member of the group.
 - Positions
 - Phone
 
-### Match
+### GameMatch
 
-Represents played and planned matches.
+Represents played and planned matches. Named `GameMatch` (table
+`game_matches`) because `Match` is a reserved keyword in PHP 8+.
 
 - Id
 - Date
@@ -115,12 +116,12 @@ Represents played and planned matches.
 - Team B Id
 - Status
 
-### MatchTeam
+### GameMatchTeam
 
 Represents teams that play matches. There should be only 2 per match.
 
 - Id
-- Match Id
+- GameMatch Id
 - Team Name
 - Result
 
@@ -129,7 +130,7 @@ Represents teams that play matches. There should be only 2 per match.
 Represents relation of player and team.
 
 - Id
-- Match Team Id
+- GameMatchTeam Id
 - Player Id
 - Position
 - Game Rating
@@ -140,7 +141,7 @@ Represents relation of player and team.
 Represents substitutions that might happen in game.
 
 - Id
-- Match Team Id
+- GameMatchTeam Id
 - Player Id In
 - Player Id Out
 - Match Time (minute)
@@ -151,7 +152,7 @@ Represents attendance list with status for better plan.
 
 - Id
 - Player Id
-- Match Id
+- GameMatch Id
 - Status
 
 ### FinancialTransaction

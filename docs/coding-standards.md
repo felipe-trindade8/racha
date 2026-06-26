@@ -27,6 +27,14 @@ Examples:
 - attendance_confirmations
 - $user['player_id']
 
+#### Reserved keyword: the match entity
+
+The soccer "match" entity is named `GameMatch` (model, table `game_matches`,
+columns such as `game_match_id`, enum `GameMatchStatusEnum`, factories, tests
+and docs). Never use `Match`: it is a reserved keyword in PHP 8+ (the `match`
+expression), so `class Match` is a fatal parse error. Use `GameMatch` /
+`GameMatchTeam` consistently across every layer.
+
 ### Frontend
 
 - Components: PascalCase
