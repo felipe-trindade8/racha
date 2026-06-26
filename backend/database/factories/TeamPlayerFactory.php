@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\GameMatchTeam;
 use App\Models\Player;
+use App\Models\Position;
 use App\Models\TeamPlayer;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -22,7 +23,9 @@ class TeamPlayerFactory extends Factory
         return [
             'game_match_team_id' => GameMatchTeam::factory(),
             'player_id' => Player::factory(),
-            'position' => fake()->randomElement(['GK', 'DEF', 'MID', 'FWD']),
+            // The positions catalog is seeded, not generated; leave the slot
+            // unassigned by default and set it explicitly via forPosition().
+            'position_id' => null,
             'game_rating' => null,
             'is_starter' => false,
         ];
@@ -45,6 +48,16 @@ class TeamPlayerFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'game_match_team_id' => $team->id,
+        ]);
+    }
+
+    /**
+     * Line the player up in the given position.
+     */
+    public function forPosition(Position $position): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'position_id' => $position->id,
         ]);
     }
 }

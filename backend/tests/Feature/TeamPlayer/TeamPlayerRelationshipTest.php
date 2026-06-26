@@ -2,7 +2,9 @@
 
 use App\Models\GameMatchTeam;
 use App\Models\Player;
+use App\Models\Position;
 use App\Models\TeamPlayer;
+use Database\Seeders\PositionSeeder;
 
 it('relates a team player back to its player', function (): void {
     $player = Player::factory()->create();
@@ -26,6 +28,22 @@ it('relates a team to its rostered players', function (): void {
 
     expect($team->teamPlayers)->toHaveCount(3)
         ->and($team->teamPlayers->first())->toBeInstanceOf(TeamPlayer::class);
+});
+
+it('relates a team player to its position', function (): void {
+    $this->seed(PositionSeeder::class);
+    $midfielder = Position::where('code', 'MID')->firstOrFail();
+    $teamPlayer = TeamPlayer::factory()->forPosition($midfielder)->create();
+
+    expect($teamPlayer->position)->toBeInstanceOf(Position::class)
+        ->and($teamPlayer->position->code)->toBe('MID');
+});
+
+it('leaves the position unassigned by default', function (): void {
+    $teamPlayer = TeamPlayer::factory()->create();
+
+    expect($teamPlayer->position_id)->toBeNull()
+        ->and($teamPlayer->position)->toBeNull();
 });
 
 it('casts is_starter to a boolean', function (): void {
