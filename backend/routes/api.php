@@ -10,7 +10,11 @@ use App\Http\Controllers\Api\V1\Finance\StoreFinancialTransactionController;
 use App\Http\Controllers\Api\V1\Finance\UpdateFinancialTransactionController;
 use App\Http\Controllers\Api\V1\Finance\UpdateFinancialTransactionStatusController;
 use App\Http\Controllers\Api\V1\HealthController;
+use App\Http\Controllers\Api\V1\Matches\IndexGameMatchController;
 use App\Http\Controllers\Api\V1\Matches\RecordGameMatchScoreController;
+use App\Http\Controllers\Api\V1\Matches\ShowGameMatchController;
+use App\Http\Controllers\Api\V1\Matches\StoreGameMatchController;
+use App\Http\Controllers\Api\V1\Matches\UpdateGameMatchController;
 use App\Http\Controllers\Api\V1\Players\IndexPlayerController;
 use App\Http\Controllers\Api\V1\Players\ShowPlayerController;
 use App\Http\Controllers\Api\V1\Players\StorePlayerController;
@@ -36,6 +40,10 @@ Route::prefix('v1')->group(function (): void {
         Route::put('players/{player}', UpdatePlayerController::class);
         Route::patch('players/{player}/status', UpdatePlayerStatusController::class);
 
+        Route::get('matches', IndexGameMatchController::class);
+        Route::post('matches', StoreGameMatchController::class);
+        Route::get('matches/{gameMatch}', ShowGameMatchController::class);
+        Route::put('matches/{gameMatch}', UpdateGameMatchController::class);
         Route::patch('matches/{gameMatch}/score', RecordGameMatchScoreController::class);
 
         Route::post('financial-transactions/monthly-payments', GenerateMonthlyPaymentsController::class);
