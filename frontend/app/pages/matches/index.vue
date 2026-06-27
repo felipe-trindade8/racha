@@ -151,6 +151,16 @@ watch([statusFilter, dateFilter], () => {
                 <UBadge :color="statusBadgeColor[match.status]" variant="subtle">
                   {{ match.status }}
                 </UBadge>
+                <UButton
+                  v-if="isAdmin && match.status === MatchStatus.Planned"
+                  :to="`/admin/matches/${match.id}/score`"
+                  icon="i-lucide-clipboard-pen"
+                  color="primary"
+                  variant="soft"
+                  size="sm"
+                  label="Record score"
+                  :aria-label="`Record score for ${teamName(match, 0)} vs ${teamName(match, 1)}`"
+                />
               </div>
             </div>
           </UCard>
