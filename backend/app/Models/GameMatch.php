@@ -43,6 +43,16 @@ class GameMatch extends Model
     }
 
     /**
+     * The attendance records of players for this match.
+     *
+     * @return HasMany<Attendance, $this>
+     */
+    public function attendances(): HasMany
+    {
+        return $this->hasMany(Attendance::class);
+    }
+
+    /**
      * The first (home) team of this match.
      *
      * @return BelongsTo<GameMatchTeam, $this>
