@@ -139,4 +139,26 @@ describe('matches list page', () => {
 
     expect(wrapper.text()).toContain('New match')
   })
+
+  it('shows a Record score action on planned matches for administrators', async () => {
+    isAdmin.value = true
+    const wrapper = await mountSuspended(MatchesPage)
+
+    const link = wrapper.get('a[href="/admin/matches/1/score"]')
+    expect(link.text()).toContain('Record score')
+  })
+
+  it('hides the Record score action from non-administrators', async () => {
+    const wrapper = await mountSuspended(MatchesPage)
+
+    expect(wrapper.text()).not.toContain('Record score')
+  })
+
+  it('does not offer Record score on finished matches', async () => {
+    isAdmin.value = true
+    matches.value = [{ ...plannedMatch, status: MatchStatus.Finished }]
+    const wrapper = await mountSuspended(MatchesPage)
+
+    expect(wrapper.text()).not.toContain('Record score')
+  })
 })
