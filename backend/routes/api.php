@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\V1\Attendance\IndexAttendanceController;
+use App\Http\Controllers\Api\V1\Attendance\StoreAttendanceController;
 use App\Http\Controllers\Api\V1\Auth\LoginController;
 use App\Http\Controllers\Api\V1\Auth\LogoutController;
 use App\Http\Controllers\Api\V1\Auth\MeController;
@@ -47,6 +49,8 @@ Route::prefix('v1')->group(function (): void {
         Route::get('matches/{gameMatch}', ShowGameMatchController::class);
         Route::put('matches/{gameMatch}', UpdateGameMatchController::class);
         Route::patch('matches/{gameMatch}/score', RecordGameMatchScoreController::class);
+        Route::get('matches/{gameMatch}/attendance', IndexAttendanceController::class);
+        Route::post('matches/{gameMatch}/attendance', StoreAttendanceController::class);
 
         Route::post('financial-transactions/monthly-payments', GenerateMonthlyPaymentsController::class);
         Route::get('financial-transactions/cash-flow', CashFlowController::class);

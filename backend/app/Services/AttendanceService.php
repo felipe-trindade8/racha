@@ -8,6 +8,7 @@ use App\Enums\PlayerStatusEnum;
 use App\Models\Attendance;
 use App\Models\GameMatch;
 use App\Models\Player;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -24,6 +25,45 @@ use Illuminate\Validation\ValidationException;
  */
 class AttendanceService
 {
+    /**
+     * The attendance columns selected by default when listing.
+     *
+     * Qualified with the table name because the listing query joins `players`
+     * to order by name; `player_id` must be present so the player relationship
+     * can be eager-loaded.
+     *
+     * @var list<string>
+     */
+    private const DEFAULT_COLUMNS = [
+        'attendances.id',
+        'attendances.player_id',
+        'attendances.game_match_id',
+        'attendances.status',
+        'attendances.confirmed',
+        'attendances.created_at',
+        'attendances.updated_at',
+    ];
+
+    /**
+     * Return a paginated list of a match's attendance records with each player
+     * eager-loaded, ordered by player name.
+     *
+     * The `players` join is used only for the ordering; the selected columns are
+     * qualified to `attendances` so the hydrated models stay attendance records.
+     *
+     * @param  list<string>  $columns
+     * @return LengthAwarePaginator<int, Attendance>
+     */
+    public function paginate(GameMatch $match, int $perPage = 15, array $columns = self::DEFAULT_COLUMNS): LengthAwarePaginator
+    {
+        return $match->attendances()
+            ->join('players', 'players.id', '=', 'attendances.player_id')
+            ->with('player')
+            ->orderBy('players.name')
+            ->orderBy('attendances.id')
+            ->paginate($perPage, $columns);
+    }
+
     /**
      * Confirm (or update) a player's attendance for a match.
      *
