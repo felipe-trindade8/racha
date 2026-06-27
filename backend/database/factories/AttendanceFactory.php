@@ -39,6 +39,16 @@ class AttendanceFactory extends Factory
     }
 
     /**
+     * Indicate that the player cannot attend the match.
+     */
+    public function missing(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => AttendanceStatusEnum::Missing,
+        ]);
+    }
+
+    /**
      * Indicate that the player has confirmed their presence.
      */
     public function confirmed(): static

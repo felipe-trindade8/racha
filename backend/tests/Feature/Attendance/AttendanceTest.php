@@ -42,11 +42,13 @@ it('relates a match to its attendance records', function (): void {
 it('casts status to the enum and confirmed to a boolean', function (): void {
     $injured = Attendance::factory()->injured()->confirmed()->create();
     $available = Attendance::factory()->create();
+    $missing = Attendance::factory()->missing()->create();
 
     expect($injured->status)->toBe(AttendanceStatusEnum::Injured)
         ->and($injured->confirmed)->toBeTrue()
         ->and($available->status)->toBe(AttendanceStatusEnum::Available)
-        ->and($available->confirmed)->toBeFalse();
+        ->and($available->confirmed)->toBeFalse()
+        ->and($missing->status)->toBe(AttendanceStatusEnum::Missing);
 });
 
 it('defaults status to available and confirmed to false at the database level', function (): void {
