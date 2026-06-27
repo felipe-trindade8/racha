@@ -162,7 +162,12 @@ Represents attendance list with status for better plan.
 - Id
 - Player Id
 - GameMatch Id
-- Status
+- Status (available/injured/missing, where `missing` means the player cannot
+  attend the match)
+- Confirmed
+
+A player has at most one attendance record per match (unique on player +
+match).
 
 ### FinancialTransaction
 

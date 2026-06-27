@@ -67,4 +67,14 @@ class Player extends Model
     {
         return $this->hasMany(FinancialTransaction::class);
     }
+
+    /**
+     * The attendance records of this player across matches.
+     *
+     * @return HasMany<Attendance, $this>
+     */
+    public function attendances(): HasMany
+    {
+        return $this->hasMany(Attendance::class);
+    }
 }
