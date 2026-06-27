@@ -33,6 +33,12 @@ const loading = ref(false)
 const error = ref<{ message: string } | null>(null)
 const fetchList = vi.fn()
 const fetchHistory = vi.fn()
+const isAdmin = ref(false)
+// The global auth guard also calls useAuth(); give it the shape it reads so the
+// mock satisfies both the page and the middleware.
+const authUser = ref<{ id: number } | null>({ id: 1 })
+const isAuthenticated = ref(true)
+const fetchUser = vi.fn().mockResolvedValue(undefined)
 
 mockNuxtImport('useMatches', () => () => ({
   matches,
@@ -45,6 +51,13 @@ mockNuxtImport('useMatches', () => () => ({
   fetchHistory,
 }))
 
+mockNuxtImport('useAuth', () => () => ({
+  isAdmin,
+  user: authUser,
+  isAuthenticated,
+  fetchUser,
+}))
+
 describe('matches list page', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -54,6 +67,7 @@ describe('matches list page', () => {
     historyMeta.value = { current_page: 1, per_page: 15, total: 1, last_page: 1 }
     loading.value = false
     error.value = null
+    isAdmin.value = false
     fetchList.mockResolvedValue(undefined)
     fetchHistory.mockResolvedValue(undefined)
   })
@@ -111,5 +125,18 @@ describe('matches list page', () => {
     const wrapper = await mountSuspended(MatchesPage)
 
     expect(wrapper.text()).toContain('Something went wrong.')
+  })
+
+  it('hides the New match button from non-administrators', async () => {
+    const wrapper = await mountSuspended(MatchesPage)
+
+    expect(wrapper.text()).not.toContain('New match')
+  })
+
+  it('shows the New match button to administrators', async () => {
+    isAdmin.value = true
+    const wrapper = await mountSuspended(MatchesPage)
+
+    expect(wrapper.text()).toContain('New match')
   })
 })

@@ -15,6 +15,7 @@ import { MatchStatus, type MatchHistoryQuery, type MatchQuery, type MatchType } 
 const PER_PAGE = 15
 const ALL = 'all'
 
+const { isAdmin } = useAuth()
 const { matches, meta, history, historyMeta, loading, error, fetchList, fetchHistory } =
   useMatches()
 
@@ -96,7 +97,16 @@ watch([statusFilter, dateFilter], () => {
 
 <template>
   <div class="mx-auto flex max-w-2xl flex-col gap-4">
-    <h1 class="text-2xl font-semibold text-default">Matches</h1>
+    <div class="flex items-center justify-between gap-3">
+      <h1 class="text-2xl font-semibold text-default">Matches</h1>
+      <UButton
+        v-if="isAdmin"
+        to="/admin/matches/new"
+        icon="i-lucide-plus"
+        label="New match"
+        color="primary"
+      />
+    </div>
 
     <UTabs v-model="tab" :items="tabItems" :content="false" class="w-full" />
 
